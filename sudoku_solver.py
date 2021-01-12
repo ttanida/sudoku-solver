@@ -12,6 +12,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setFixedSize(631, 646)
+
         font = QtGui.QFont()
         font.setPointSize(24)
         MainWindow.setFont(font)
@@ -457,7 +458,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Sudoku solver"))
         self.solve_button.setText(_translate("MainWindow", "Solve"))
         self.clear_button.setText(_translate("MainWindow", "Clear"))
         self.actionFile.setText(_translate("MainWindow", "File"))
