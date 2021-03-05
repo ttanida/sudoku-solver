@@ -34,8 +34,9 @@ class Ui_MainWindow(object):
         self.clear_button.setFont(font)
         self.clear_button.setObjectName("clear_button")
 
-        # validator to ensure only integers from 1 - 9 are entered into cells
-        self.validator = QIntValidator(1, 9)
+        # validator to ensure only one integer between 1 - 9 is entered into cells
+        rx = QtCore.QRegExp("[1-9]{1}")
+        self.validator = QtGui.QRegExpValidator(rx)
 
         # font_size of cells
         cell_font = QtGui.QFont()
