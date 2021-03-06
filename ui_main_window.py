@@ -33,6 +33,7 @@ class UiMainWindow(object):
         self.clear_button.setGeometry(QtCore.QRect(340, 580, 191, 61))
         self.clear_button.setFont(font)
         self.clear_button.setObjectName("clear_button")
+        self.clear_button.clicked.connect(self.clear_cells)
 
         # validator to ensure only one integer between 1 - 9 is entered into cells
         rx = QtCore.QRegExp("[1-9]{1}")
@@ -61,8 +62,8 @@ class UiMainWindow(object):
                 eval(f'self.cell{row}{column}.setAlignment(QtCore.Qt.AlignCenter)', {"self": self, "QtCore": QtCore})
 
                 # every time a cell is modified (i.e. textChanged), we check if user input still satisfies
-                # sudoku constraints (e.g. number can't be in same row twice)
-                # this is done by passing UiMainWindow object to function check_input_constraints in separate module
+                # sudoku constraints (e.g. no duplicate number in same row)
+                # this is done by passing the UiMainWindow object to function check_input_constraints in separate module
                 # check_input_constraint (alias cic)
                 eval(f'self.cell{row}{column}.textChanged.connect(lambda: cic.check_input_constraints(self))',
                      {"self": self, "cic": cic})
@@ -78,12 +79,9 @@ class UiMainWindow(object):
         self.solve_button.setText(_translate("MainWindow", "Solve"))
         self.clear_button.setText(_translate("MainWindow", "Clear"))
 
+    def clear_cells(self):
+        for row in range(1, 10):
+            for column in range(1, 10):
+                eval(f'self.cell{row}{column}.setText("")', {"self": self})
 
-
-
-
-
-
-
-
-
+                

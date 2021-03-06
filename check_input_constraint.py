@@ -7,7 +7,7 @@ def check_input_constraints(ui_obj):
 	Any time a cell value is modified, check_input_constraints calls method retrieve_values_of_cells to retrieve
 	all 81 cells values and store them in a 9x9 numpy array values_of_cells.
 
-	Check_input_constraints then passes values_of_cells and values_of_cells transposed into method
+	Check_input_constraints then passes values_of_cells and values_of_cells transposed into methods
 	check_constraints_rows_columns and check_constraints_blocks to check if the row/column/block constraints
 	are not violated.
 
