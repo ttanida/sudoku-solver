@@ -59,6 +59,11 @@ class UiMainWindow(object):
                 eval(f'self.cell{row}{column}.setValidator(self.validator)', {"self": self})
                 eval(f'self.cell{row}{column}.setFont(cell_font)', {"self": self, "cell_font": cell_font})
                 eval(f'self.cell{row}{column}.setAlignment(QtCore.Qt.AlignCenter)', {"self": self, "QtCore": QtCore})
+
+                # every time a cell is modified (i.e. textChanged), we check if user input still satisfies
+                # sudoku constraints (e.g. number can't be in same row twice)
+                # this is done by passing UiMainWindow object to function check_input_constraints in separate module
+                # check_input_constraint (alias cic)
                 eval(f'self.cell{row}{column}.textChanged.connect(lambda: cic.check_input_constraints(self))',
                      {"self": self, "cic": cic})
 
