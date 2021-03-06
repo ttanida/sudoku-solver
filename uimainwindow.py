@@ -77,6 +77,9 @@ class UiMainWindow(object):
 
 
     def retrieve_values_of_cells(self):
+        """Retrieves all 81 cell values of sudoku grid as a nested numpy array
+
+        If a cell is empty, its value is 0."""
         values_of_cells = np.zeros([9, 9])
         for row in range(1, 10):
             for column in range(1, 10):
@@ -87,13 +90,13 @@ class UiMainWindow(object):
         return values_of_cells
 
     def check_constraints_rows_columns(self, values_of_cells):
-        """Checks if initial user input (matrix values_of_cells) satisfies the row/column sudoku constraints
+        """Checks if user input (matrix values_of_cells) satisfies the row/column sudoku constraints
         (i.e. no duplicate number in same row/column)
 
-        If normal matrix values_of_cells is passed as input, the method checks for the row constraints.
+        If matrix values_of_cells is passed as input without modification, the method checks for the row constraints.
         If transposed matrix values_of_cells is passed as input, the method checks for the column constraints.
 
-        Method goes row-by-row (or column-by-column if transposed matrix passed as argument) and stores values != 0
+        Method goes row-by-row (or column-by-column if transposed matrix passed as argument) and stores cell values != 0
         in dictionary "found_values" with the values as keys and the respective column (or row) as values.
 
         If there is a duplicate value in a row, it returns a tuple of (row, column1, column2), where column1 is the
@@ -118,6 +121,20 @@ class UiMainWindow(object):
         return None
 
     def check_constraints_blocks(self, values_of_cells):
+        """Checks if user input (matrix values_of_cells) satisfies the block sudoku constraints
+        (i.e. no duplicate number in same block)
+
+        There a 9 blocks in total, which are checked one-by-one using the first two for loops.
+
+        Cell values != 0 are stored as keys in the dictionary "found_values" with their respective row_index and
+        column_index stored as values.
+
+        If the same cell value is found twice in a block, the method return a tuple consisting of the indices of the
+        rows and columns of the respective block (stored in row_blocks and column_blocks) and the specific row/column
+        indices of the cells whose value appears twice.
+
+        If there are no constraint violation, the method returns None.
+        """
         row_blocks = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         column_blocks = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
@@ -136,6 +153,8 @@ class UiMainWindow(object):
         return None
 
     def change_row_color(self, check_rows):
+        """Changes the color of the row whose cells violated the constraint to light red and the color of the two cells
+        that specifically violated the constraint to dark red."""
         if check_rows is not None:
             for column in range(1,10):
                 eval(f'self.cell{check_rows[0]}{column}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
@@ -144,6 +163,8 @@ class UiMainWindow(object):
             eval(f'self.cell{check_rows[0]}{check_rows[2]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
     def change_column_color(self, check_columns):
+        """Changes the color of the column whose cells violated the constraint to light red and the color of the two
+        cells that specifically violated the constraint to dark red."""
         if check_columns is not None:
             for row in range(1,10):
                 eval(f'self.cell{row}{check_columns[0]}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
@@ -152,6 +173,8 @@ class UiMainWindow(object):
             eval(f'self.cell{check_columns[2]}{check_columns[0]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
     def change_block_color(self, check_blocks):
+        """Changes the color of the block whose cells violated the constraint to light red and the color of the two
+        cells that specifically violated the constraint to dark red."""
         if check_blocks is not None:
 
             # row_block and column_block are the respective rows and columns (i.e. block) where constraint was violated
@@ -173,6 +196,9 @@ class UiMainWindow(object):
             eval(f'self.cell{row_index_2}{column_index_2}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
     def disable_input_rows(self, check_rows):
+        """Disables all input except for the cells that violated constraints
+
+        Also sets tool tip to 'Please resolve conflict' for all cells to advise user of conflict."""
         if check_rows is not None:
             for row in range(1, 10):
                 for column in range(1, 10):
@@ -185,6 +211,9 @@ class UiMainWindow(object):
             self.solve_button.setDisabled(True)
 
     def disable_input_columns(self, check_columns):
+        """Disables all input except for the cells that violated constraints
+
+        Also sets tool tip to 'Please resolve conflict' for all cells to advise user of conflict."""
         if check_columns is not None:
             for column in range(1, 10):
                 for row in range(1, 10):
@@ -197,6 +226,9 @@ class UiMainWindow(object):
             self.solve_button.setDisabled(True)
 
     def disable_input_blocks(self, check_blocks):
+        """Disables all input except for the cells that violated constraints
+
+        Also sets tool tip to 'Please resolve conflict' for all cells to advise user of conflict."""
         if check_blocks is not None:
             # row_index_1, column_index_1, row_index_2, column_index_2 are the row/column indices of two cells that
             # violated the constraint
@@ -216,6 +248,7 @@ class UiMainWindow(object):
             self.solve_button.setDisabled(True)
 
     def enable_input(self):
+        "Enables all input"
         for row in range(1, 10):
             for column in range(1, 10):
                 eval(f'self.cell{row}{column}.setEnabled(True)', {"self": self})
@@ -229,17 +262,18 @@ class UiMainWindow(object):
         Any time a cell value is modified, check_input_constraints calls method retrieve_values_of_cells to retrieve
         all 81 cells values and store them in a 9x9 numpy array values_of_cells.
 
-        If a cell is empty, its value is stored as a zero.
-
         Check_input_constraints then passes values_of_cells and values_of_cells transposed into method
         check_constraints_rows_columns and check_constraints_blocks to check if the row/column/block constraints
         are not violated.
 
         If a constraint is violated, the respective row/column/block and the two cells that violated the constraint are
         highlighted in red by methods change_row_color/change_column_color/change_block_color and all inputs are disabled
-        except for the two cells that iolate the constraint.
+        except for the two cells that violated the constraint.
+
+        If the conflict is resolved, method enable_input enables all input again.
         """
 
+        # retrieve nested numpy array of all 81 cell values
         values_of_cells = self.retrieve_values_of_cells()
 
         # check for duplicates in rows
