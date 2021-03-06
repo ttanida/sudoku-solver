@@ -176,9 +176,9 @@ class UiMainWindow(object):
         if check_rows is not None:
             for row in range(1, 10):
                 for column in range(1, 10):
+                    eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                    eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                     if row == check_rows[0] and (column == check_rows[1] or column == check_rows[2]):
-                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
-                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                         continue
                     eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
 
@@ -188,9 +188,9 @@ class UiMainWindow(object):
         if check_columns is not None:
             for column in range(1, 10):
                 for row in range(1, 10):
+                    eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                    eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                     if column == check_columns[0] and (row == check_columns[1] or row == check_columns[2]):
-                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
-                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                         continue
                     eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
 
@@ -207,9 +207,9 @@ class UiMainWindow(object):
 
             for row in range(1, 10):
                 for column in range(1, 10):
+                    eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                    eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                     if (row == row_index_1 and column == column_index_1) or (row == row_index_2 and column == column_index_2):
-                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
-                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                         continue
                     eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
 
