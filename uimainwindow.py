@@ -58,7 +58,7 @@ class UiMainWindow(object):
                 eval(f'self.cell{row}{column}.setValidator(self.validator)', {"self": self})
                 eval(f'self.cell{row}{column}.setFont(cell_font)', {"self": self, "cell_font": cell_font})
                 eval(f'self.cell{row}{column}.setAlignment(QtCore.Qt.AlignCenter)', {"self": self, "QtCore": QtCore})
-                eval(f'self.cell{row}{column}.textChanged.connect(self.check_constraints)', {"self": self})
+                eval(f'self.cell{row}{column}.textChanged.connect(self.check_input_constraints)', {"self": self})
 
         main_window.setCentralWidget(self.centralwidget)
 
@@ -70,6 +70,11 @@ class UiMainWindow(object):
         main_window.setWindowTitle(_translate("MainWindow", "Sudoku solver"))
         self.solve_button.setText(_translate("MainWindow", "Solve"))
         self.clear_button.setText(_translate("MainWindow", "Clear"))
+
+    # REFACTOR CODE BELOW INTO DIFFERENT FILE AND CLASS!
+    # REFACTOR CODE BELOW INTO DIFFERENT FILE AND CLASS!
+    # REFACTOR CODE BELOW INTO DIFFERENT FILE AND CLASS!
+
 
     def retrieve_values_of_cells(self):
         values_of_cells = np.zeros([9, 9])
@@ -103,12 +108,30 @@ class UiMainWindow(object):
         for row in range(1, 10):
             found_values = {}
             for column in range(1, 10):
-                value_of_cell = values_of_cells[row - 1, column - 1]
+                value_of_cell = values_of_cells[row-1, column-1]
                 if value_of_cell != 0:
                     if value_of_cell not in found_values.keys():
                         found_values[value_of_cell] = column
                     else:
                         return row, found_values[value_of_cell], column
+
+        return None
+
+    def check_constraints_blocks(self, values_of_cells):
+        row_blocks = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        column_blocks = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+        for row_block in row_blocks:
+            for column_block in column_blocks:
+                found_values = {}
+                for row_index in row_block:
+                    for column_index in column_block:
+                        value_of_cell = values_of_cells[row_index-1, column_index-1]
+                        if value_of_cell != 0:
+                            if value_of_cell not in found_values.keys():
+                                found_values[value_of_cell] = row_index, column_index
+                            else:
+                                return row_block, column_block, found_values[value_of_cell], (row_index, column_index)
 
         return None
 
@@ -128,6 +151,27 @@ class UiMainWindow(object):
             eval(f'self.cell{check_columns[1]}{check_columns[0]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
             eval(f'self.cell{check_columns[2]}{check_columns[0]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
+    def change_block_color(self, check_blocks):
+        if check_blocks is not None:
+
+            # row_block and column_block are the respective rows and columns (i.e. block) where constraint was violated
+            row_block = check_blocks[0]
+            column_block = check_blocks[1]
+
+            # row_index_1, column_index_1, row_index_2, column_index_2 are the row/column indices of two cells that
+            # violated the constraint
+            row_index_1 = check_blocks[2][0]
+            column_index_1 = check_blocks[2][1]
+            row_index_2 = check_blocks[3][0]
+            column_index_2 = check_blocks[3][1]
+
+            for row_index in row_block:
+                for column_index in column_block:
+                    eval(f'self.cell{row_index}{column_index}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
+
+            eval(f'self.cell{row_index_1}{column_index_1}.setStyleSheet("background-color: rgb(230, 0, 0);")',{"self": self})
+            eval(f'self.cell{row_index_2}{column_index_2}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+
     def disable_input_rows(self, check_rows):
         if check_rows is not None:
             for row in range(1, 10):
@@ -137,6 +181,8 @@ class UiMainWindow(object):
                         eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
                         continue
                     eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
+
+            self.solve_button.setDisabled(True)
 
     def disable_input_columns(self, check_columns):
         if check_columns is not None:
@@ -148,25 +194,50 @@ class UiMainWindow(object):
                         continue
                     eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
 
+            self.solve_button.setDisabled(True)
+
+    def disable_input_blocks(self, check_blocks):
+        if check_blocks is not None:
+            # row_index_1, column_index_1, row_index_2, column_index_2 are the row/column indices of two cells that
+            # violated the constraint
+            row_index_1 = check_blocks[2][0]
+            column_index_1 = check_blocks[2][1]
+            row_index_2 = check_blocks[3][0]
+            column_index_2 = check_blocks[3][1]
+
+            for row in range(1, 10):
+                for column in range(1, 10):
+                    if (row == row_index_1 and column == column_index_1) or (row == row_index_2 and column == column_index_2):
+                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
+                        continue
+                    eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
+
+            self.solve_button.setDisabled(True)
+
     def enable_input(self):
         for row in range(1, 10):
             for column in range(1, 10):
                 eval(f'self.cell{row}{column}.setEnabled(True)', {"self": self})
                 eval(f'self.cell{row}{column}.setStyleSheet("background-color: rgb(255, 255, 255);")', {"self": self})
 
-    def check_constraints(self):
+        self.solve_button.setEnabled(True)
+
+    def check_input_constraints(self):
         """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
 
-        Any time a cell value is modified, check_constraints calls method retrieve_values_of_cells to retrieve
+        Any time a cell value is modified, check_input_constraints calls method retrieve_values_of_cells to retrieve
         all 81 cells values and store them in a 9x9 numpy array values_of_cells.
 
         If a cell is empty, its value is stored as a zero.
 
-        Check_constraints then passes values_of_cells and values_of_cells transposed into method
-        check_constraints_rows_columns to check if the row and column constraints are not violated.
+        Check_input_constraints then passes values_of_cells and values_of_cells transposed into method
+        check_constraints_rows_columns and check_constraints_blocks to check if the row/column/block constraints
+        are not violated.
 
-        If a constraint is violated, the respective row/column and cells are highlighted in red by
-        methods change_row_color and change_column_color.
+        If a constraint is violated, the respective row/column/block and the two cells that violated the constraint are
+        highlighted in red by methods change_row_color/change_column_color/change_block_color and all inputs are disabled
+        except for the two cells that iolate the constraint.
         """
 
         values_of_cells = self.retrieve_values_of_cells()
@@ -185,9 +256,17 @@ class UiMainWindow(object):
         self.change_column_color(check_columns)
         self.disable_input_columns(check_columns)
 
-        # enable all input if there are neither row nor column duplicates and change color back to white
-        if check_rows is None and check_columns is None:
+        # check for duplicates in blocks
+        check_blocks = self.check_constraints_blocks(values_of_cells)
+
+        # change block color and disable all input (except for duplicates) if there is a block duplicate
+        self.change_block_color(check_blocks)
+        self.disable_input_blocks(check_blocks)
+
+        # enable all input if there are neither row nor column nor block duplicates and change color back to white
+        if check_rows is None and check_columns is None and check_blocks is None:
             self.enable_input()
+
 
 
 
