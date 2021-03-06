@@ -71,6 +71,16 @@ class UiMainWindow(object):
         self.solve_button.setText(_translate("MainWindow", "Solve"))
         self.clear_button.setText(_translate("MainWindow", "Clear"))
 
+    def retrieve_values_of_cells(self):
+        values_of_cells = np.zeros([9, 9])
+        for row in range(1, 10):
+            for column in range(1, 10):
+                value_of_cell = eval(f'self.cell{row}{column}.text()', {"self": self})
+                if value_of_cell != "":
+                    values_of_cells[row - 1, column - 1] = int(value_of_cell)
+
+        return values_of_cells
+
     def check_constraints_rows_columns(self, values_of_cells):
         """Checks if initial user input (matrix values_of_cells) satisfies the row/column sudoku constraints
         (i.e. no duplicate number in same row/column)
@@ -115,18 +125,34 @@ class UiMainWindow(object):
             for row in range(1,10):
                 eval(f'self.cell{row}{check_columns[0]}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
 
-            eval(f'self.cell{check_columns[0]}{check_columns[1]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
-            eval(f'self.cell{check_columns[0]}{check_columns[2]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+            eval(f'self.cell{check_columns[1]}{check_columns[0]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+            eval(f'self.cell{check_columns[2]}{check_columns[0]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
-    def retrieve_values_of_cells(self):
-        values_of_cells = np.zeros([9, 9])
+    def disable_input_rows(self, check_rows):
+        if check_rows is not None:
+            for row in range(1, 10):
+                for column in range(1, 10):
+                    if row == check_rows[0] and (column == check_rows[1] or column == check_rows[2]):
+                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
+                        continue
+                    eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
+
+    def disable_input_columns(self, check_columns):
+        if check_columns is not None:
+            for column in range(1, 10):
+                for row in range(1, 10):
+                    if column == check_columns[0] and (row == check_columns[1] or row == check_columns[2]):
+                        eval(f'self.cell{row}{column}.setToolTip("Please resolve the conflict!")', {"self": self})
+                        eval(f'self.cell{row}{column}.setToolTipDuration(10000)', {"self": self})
+                        continue
+                    eval(f'self.cell{row}{column}.setDisabled(True)', {"self": self})
+
+    def enable_input(self):
         for row in range(1, 10):
             for column in range(1, 10):
-                value_of_cell = eval(f'self.cell{row}{column}.text()', {"self": self})
-                if value_of_cell != "":
-                    values_of_cells[row - 1, column - 1] = int(value_of_cell)
-
-        return values_of_cells
+                eval(f'self.cell{row}{column}.setEnabled(True)', {"self": self})
+                eval(f'self.cell{row}{column}.setStyleSheet("background-color: rgb(255, 255, 255);")', {"self": self})
 
     def check_constraints(self):
         """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
@@ -147,11 +173,21 @@ class UiMainWindow(object):
 
         # check for duplicates in rows
         check_rows = self.check_constraints_rows_columns(values_of_cells)
+
+        # change row color and disable all input (except for duplicates) if there is a row duplicate
         self.change_row_color(check_rows)
+        self.disable_input_rows(check_rows)
 
         # check for duplicates in columns (values_of_cells passed as transpose)
         check_columns = self.check_constraints_rows_columns(values_of_cells.T)
+
+        # change column color and disable all input (except for duplicates) if there is a column duplicate
         self.change_column_color(check_columns)
+        self.disable_input_columns(check_columns)
+
+        # enable all input if there are neither row nor column duplicates and change color back to white
+        if check_rows is None and check_columns is None:
+            self.enable_input()
 
 
 
