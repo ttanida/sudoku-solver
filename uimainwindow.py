@@ -87,6 +87,8 @@ class UiMainWindow(object):
         Similarly, if transposed matrix is passed as argument and there is a duplicate value in a column, it returns
         a tuple of (column, row1, row2), where row1 is the row of the 1st duplicate value and row2 is the row of the
         2nd duplicate value.
+
+        If there are no duplicate values, method return None.
         """
         for row in range(1, 10):
             found_values = {}
@@ -98,25 +100,60 @@ class UiMainWindow(object):
                     else:
                         return row, found_values[value_of_cell], column
 
-    def check_constraints(self):
-        """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
+        return None
 
-        Any time a cell value is modified, method check_constraints retrieves all 81 cells values and stores them
-        in a 9x9 matrix (values_of_cells).
+    def change_row_color(self, check_rows):
+        if check_rows is not None:
+            for column in range(1,10):
+                eval(f'self.cell{check_rows[0]}{column}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
 
-        If a cell is empty, its value is stored as a zero.
-        """
+            eval(f'self.cell{check_rows[0]}{check_rows[1]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+            eval(f'self.cell{check_rows[0]}{check_rows[2]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
 
-        values_of_cells = np.zeros([9,9])
+    def change_column_color(self, check_columns):
+        if check_columns is not None:
+            for row in range(1,10):
+                eval(f'self.cell{row}{check_columns[0]}.setStyleSheet("background-color: rgb(255, 128, 128);")', {"self": self})
+
+            eval(f'self.cell{check_columns[0]}{check_columns[1]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+            eval(f'self.cell{check_columns[0]}{check_columns[2]}.setStyleSheet("background-color: rgb(230, 0, 0);")', {"self": self})
+
+    def retrieve_values_of_cells(self):
+        values_of_cells = np.zeros([9, 9])
         for row in range(1, 10):
             for column in range(1, 10):
                 value_of_cell = eval(f'self.cell{row}{column}.text()', {"self": self})
                 if value_of_cell != "":
-                    values_of_cells[row-1, column-1] = int(value_of_cell)
+                    values_of_cells[row - 1, column - 1] = int(value_of_cell)
 
-        print(values_of_cells)
-        print()
-        print(self.check_constraints_rows_columns(values_of_cells.T))
+        return values_of_cells
+
+    def check_constraints(self):
+        """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
+
+        Any time a cell value is modified, check_constraints calls method retrieve_values_of_cells to retrieve
+        all 81 cells values and store them in a 9x9 numpy array values_of_cells.
+
+        If a cell is empty, its value is stored as a zero.
+
+        Check_constraints then passes values_of_cells and values_of_cells transposed into method
+        check_constraints_rows_columns to check if the row and column constraints are not violated.
+
+        If a constraint is violated, the respective row/column and cells are highlighted in red by
+        methods change_row_color and change_column_color.
+        """
+
+        values_of_cells = self.retrieve_values_of_cells()
+
+        # check for duplicates in rows
+        check_rows = self.check_constraints_rows_columns(values_of_cells)
+        self.change_row_color(check_rows)
+
+        # check for duplicates in columns (values_of_cells passed as transpose)
+        check_columns = self.check_constraints_rows_columns(values_of_cells.T)
+        self.change_column_color(check_columns)
+
+
 
 
 
