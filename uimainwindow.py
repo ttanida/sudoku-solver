@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import numpy as np
 
 
 class UiMainWindow(object):
@@ -47,7 +48,7 @@ class UiMainWindow(object):
 
         # setting up all 81 (9x9) cells in sudoku grid
         for row in range(1, 10):
-            for column in range(1,10):
+            for column in range(1, 10):
                 exec(f'self.cell{row}{column} = QtWidgets.QLineEdit(self.centralwidget)', {"self": self, "QtWidgets": QtWidgets})
                 eval(f'self.cell{row}{column}.setGeometry(QtCore.QRect({self.column_geometry_settings[column-1]}, '
                      f'{self.row_geometry_settings[row-1]}, 65, 59))',{"self": self, "QtCore": QtCore})
@@ -73,13 +74,22 @@ class UiMainWindow(object):
     def check_constraints(self):
         """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same line)
 
-        
+        Any time a cell value is modified, method check_constraints retrieves all 81 cells values and stores them
+        in a 9x9 matrix (values_of_cells).
 
+        If a cell is empty, its value is stored as a zero.
         """
-        values_of_cells = []
-        for row in range(1, 10):
-            values_of_cells.append([eval(f'self.cell{row}{column}.text()', {"self": self}) for column in range(1, 10)])
 
-        for row in values_of_cells:
-            print(row)
+        values_of_cells = np.zeros([9,9])
+        for row in range(1, 10):
+            for column in range(1, 10):
+                value_of_cell = eval(f'self.cell{row}{column}.text()', {"self": self})
+                if value_of_cell != "":
+                    values_of_cells[row-1, column-1] = int(value_of_cell)
+
+        print(values_of_cells)
         print()
+
+    # def check_constraints_rows(self, values_of_cells):
+    #     for row in range(1, 10):
+
