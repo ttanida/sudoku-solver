@@ -71,8 +71,35 @@ class UiMainWindow(object):
         self.solve_button.setText(_translate("MainWindow", "Solve"))
         self.clear_button.setText(_translate("MainWindow", "Clear"))
 
+    def check_constraints_rows_columns(self, values_of_cells):
+        """Checks if initial user input (matrix values_of_cells) satisfies the row/column sudoku constraints
+        (i.e. no duplicate number in same row/column)
+
+        If normal matrix values_of_cells is passed as input, the method checks for the row constraints.
+        If transposed matrix values_of_cells is passed as input, the method checks for the column constraints.
+
+        Method goes row-by-row (or column-by-column if transposed matrix passed as argument) and stores values != 0
+        in dictionary "found_values" with the values as keys and the respective column (or row) as values.
+
+        If there is a duplicate value in a row, it returns a tuple of (row, column1, column2), where column1 is the
+        column of the 1st duplicate value and column2 is the column of the 2nd duplicate value.
+
+        Similarly, if transposed matrix is passed as argument and there is a duplicate value in a column, it returns
+        a tuple of (column, row1, row2), where row1 is the row of the 1st duplicate value and row2 is the row of the
+        2nd duplicate value.
+        """
+        for row in range(1, 10):
+            found_values = {}
+            for column in range(1, 10):
+                value_of_cell = values_of_cells[row - 1, column - 1]
+                if value_of_cell != 0:
+                    if value_of_cell not in found_values.keys():
+                        found_values[value_of_cell] = column
+                    else:
+                        return row, found_values[value_of_cell], column
+
     def check_constraints(self):
-        """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same line)
+        """Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
 
         Any time a cell value is modified, method check_constraints retrieves all 81 cells values and stores them
         in a 9x9 matrix (values_of_cells).
@@ -89,7 +116,9 @@ class UiMainWindow(object):
 
         print(values_of_cells)
         print()
+        print(self.check_constraints_rows_columns(values_of_cells.T))
 
-    # def check_constraints_rows(self, values_of_cells):
-    #     for row in range(1, 10):
+
+
+
 
