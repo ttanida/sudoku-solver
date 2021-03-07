@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import check_input_constraint as cic
+import backtracking_algorithm as bt
 
 
 class UiMainWindow(object):
@@ -27,6 +28,10 @@ class UiMainWindow(object):
         self.solve_button = QtWidgets.QPushButton(self.centralwidget)
         self.solve_button.setGeometry(QtCore.QRect(110, 580, 181, 61))
         self.solve_button.setObjectName("solve_button")
+
+        # solve_button clicked triggers backtracking algorithms with ac-3 preprocessing and ac-3 processing after
+        # every iteration
+        self.solve_button.clicked.connect(lambda: bt.Backtracking(self))
 
         # clear_button
         self.clear_button = QtWidgets.QPushButton(self.centralwidget)
@@ -84,4 +89,3 @@ class UiMainWindow(object):
             for column in range(1, 10):
                 eval(f'self.cell{row}{column}.setText("")', {"self": self})
 
-                
