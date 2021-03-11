@@ -29,9 +29,10 @@ class UiMainWindow(object):
         self.solve_button.setGeometry(QtCore.QRect(110, 580, 181, 61))
         self.solve_button.setObjectName("solve_button")
 
-        # solve_button clicked triggers backtracking algorithms with ac-3 preprocessing and ac-3 processing after
-        # every iteration
-        self.solve_button.clicked.connect(lambda: bt.backtracking_algo(self))
+        # solve_button clicked triggers backtracking algorithms
+        # the values of all cells are first converted into a nested numpy matrix by calling get_values_of_cells
+        # on self before passing it into the backtracking_algo
+        self.solve_button.clicked.connect(lambda: bt.prepare(self))
 
         # clear_button
         self.clear_button = QtWidgets.QPushButton(self.centralwidget)
