@@ -4,7 +4,7 @@ import numpy as np
 def check_input_constraints(ui_obj):
 	"""Checks if initial user input satisfies the sudoku constraints (e.g. no duplicate number in same row)
 
-	Any time a cell value is modified, check_input_constraints calls method retrieve_values_of_cells to retrieve
+	Any time a cell value is modified, check_input_constraints calls method get_values_of_cells to get
 	all 81 cells values and store them in a 9x9 numpy array values_of_cells.
 
 	Check_input_constraints then passes values_of_cells and values_of_cells transposed into methods
@@ -19,7 +19,7 @@ def check_input_constraints(ui_obj):
 	"""
 
 	# retrieve nested numpy array of all 81 cell values
-	values_of_cells = retrieve_values_of_cells(ui_obj)
+	values_of_cells = get_values_of_cells(ui_obj)
 
 	# check for duplicates in rows
 	check_rows = check_constraints_rows_columns(values_of_cells)
@@ -47,7 +47,7 @@ def check_input_constraints(ui_obj):
 		enable_input(ui_obj)
 
 
-def retrieve_values_of_cells(ui_obj):
+def get_values_of_cells(ui_obj):
 	"""Retrieves all 81 cell values of sudoku grid as a nested numpy array
 
 	If a cell is empty, its value is 0."""
@@ -229,7 +229,7 @@ def disable_input_blocks(check_blocks, ui_obj):
 
 
 def enable_input(ui_obj):
-	"Enables all input"
+	"""Enables all input"""
 	for row in range(1, 10):
 		for column in range(1, 10):
 			eval(f'ui_obj.cell{row}{column}.setEnabled(True)', {"ui_obj": ui_obj})

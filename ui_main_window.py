@@ -31,7 +31,7 @@ class UiMainWindow(object):
 
         # solve_button clicked triggers backtracking algorithms with ac-3 preprocessing and ac-3 processing after
         # every iteration
-        self.solve_button.clicked.connect(lambda: bt.Backtracking(self))
+        self.solve_button.clicked.connect(lambda: bt.backtracking_algo(self))
 
         # clear_button
         self.clear_button = QtWidgets.QPushButton(self.centralwidget)
