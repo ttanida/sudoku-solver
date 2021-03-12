@@ -10,6 +10,7 @@ def prepare(ui_obj):
 	2. Highlights user inputted cells in orange"""
 
 	ui_obj.solve_button_clicked = True
+	ui_obj.solve_button.setDisabled(True)
 	ui_obj.clear_button.setDisabled(True)
 
 	values_of_cells = get_values_of_cells(ui_obj)
@@ -19,6 +20,7 @@ def prepare(ui_obj):
 		backtracking_algo(values_of_cells, ui_obj)
 	except:
 		ui_obj.solve_button_clicked = False
+		ui_obj.solve_button.setEnabled(True)
 		ui_obj.clear_button.setEnabled(True)
 
 
