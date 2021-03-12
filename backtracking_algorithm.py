@@ -1,6 +1,5 @@
 from check_input_constraint import get_values_of_cells
-from PyQt5 import QtWidgets, QtTest
-import time
+from PyQt5 import QtWidgets
 
 
 def prepare(ui_obj):
