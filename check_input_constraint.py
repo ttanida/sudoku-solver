@@ -233,7 +233,8 @@ def enable_input(ui_obj):
 	for row in range(1, 10):
 		for column in range(1, 10):
 			eval(f'ui_obj.cell{row}{column}.setEnabled(True)', {"ui_obj": ui_obj})
-			eval(f'ui_obj.cell{row}{column}.setStyleSheet("background-color: rgb(255, 255, 255);")', {"ui_obj": ui_obj})
+			if not ui_obj.solve_button_clicked:
+				eval(f'ui_obj.cell{row}{column}.setStyleSheet("background-color: rgb(255, 255, 255);")', {"ui_obj": ui_obj})
 
 	ui_obj.solve_button.setEnabled(True)
 

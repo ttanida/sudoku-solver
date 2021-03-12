@@ -32,6 +32,7 @@ class UiMainWindow(object):
         # solve_button clicked triggers backtracking algorithms
         # the values of all cells are first converted into a nested numpy matrix by calling get_values_of_cells
         # on self before passing it into the backtracking_algo
+        self.solve_button_clicked = False
         self.solve_button.clicked.connect(lambda: bt.prepare(self))
 
         # clear_button

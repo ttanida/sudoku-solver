@@ -1,5 +1,5 @@
 from check_input_constraint import get_values_of_cells
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtTest
 import time
 
 
@@ -8,13 +8,18 @@ def prepare(ui_obj):
 
 	1. Converts ui_obj to nested numpy matrix values_of_cells to be passed into backtracking_algo
 	2. Highlights user inputted cells in orange"""
+
+	ui_obj.solve_button_clicked = True
+	ui_obj.clear_button.setDisabled(True)
+
 	values_of_cells = get_values_of_cells(ui_obj)
 
 	color_user_inputted_cells(values_of_cells, ui_obj)
 	try:
 		backtracking_algo(values_of_cells, ui_obj)
 	except:
-		print("finished!")
+		ui_obj.solve_button_clicked = False
+		ui_obj.clear_button.setEnabled(True)
 
 
 def color_user_inputted_cells(values_of_cells, ui_obj):
@@ -58,6 +63,7 @@ def backtracking_algo(values_of_cells, ui_obj):
 	# we know we have a solution, since we went through the nested for loops, which means that no cell is empty
 	raise Exception("Solution to sudoku found! Breaking out of recursive loop!")
 
+
 def possible(row_index, column_index, number, values_of_cells):
 	"""Checks if it's possible to place the number in the specified
 	row_index and column_index in the numpy matrix values_of_cells"""
@@ -85,3 +91,4 @@ def possible(row_index, column_index, number, values_of_cells):
 				return False
 
 	return True
+
