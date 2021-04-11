@@ -5,7 +5,8 @@ from PyQt5 import QtWidgets
 def prepare(ui_obj):
 	"""Prepares the data for the backtracking algorithm
 
-	1. Converts ui_obj to nested numpy matrix values_of_cells to be passed into backtracking_algo
+	1. Converts values of UiMainWindow object ui_obj to nested numpy matrix values_of_cells
+	to be passed into backtracking_algo
 	2. Highlights user inputted cells in orange"""
 
 	# disable the solve and clear button
