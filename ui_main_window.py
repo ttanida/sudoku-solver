@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 import check_input_constraint as cic
 import backtracking_algorithm as bt
 
@@ -28,11 +29,11 @@ class UiMainWindow(object):
         self.solve_button = QtWidgets.QPushButton(self.centralwidget)
         self.solve_button.setGeometry(QtCore.QRect(110, 580, 181, 61))
         self.solve_button.setObjectName("solve_button")
-
-        # solve_button clicked triggers backtracking algorithms
-        # the values of all cells are first converted into a nested numpy matrix by calling get_values_of_cells
-        # on self before passing it into the backtracking_algo
         self.solve_button_clicked = False
+
+        # solve_button clicked triggers backtracking algorithm
+        # UiMainWindow object is passed to function prepare in module backtracking_algorithm (alias bt)
+        # to prepare the data for algorithm
         self.solve_button.clicked.connect(lambda: bt.prepare(self))
 
         # clear_button
@@ -70,7 +71,7 @@ class UiMainWindow(object):
 
                 # every time a cell is modified (i.e. textChanged), we check if user input still satisfies
                 # sudoku constraints (e.g. no duplicate number in same row)
-                # this is done by passing the UiMainWindow object to function check_input_constraints in separate module
+                # this is done by passing the UiMainWindow object to function check_input_constraints in module
                 # check_input_constraint (alias cic)
                 eval(f'self.cell{row}{column}.textChanged.connect(lambda: cic.check_input_constraints(self))',
                      {"self": self, "cic": cic})
@@ -87,6 +88,7 @@ class UiMainWindow(object):
         self.clear_button.setText(_translate("MainWindow", "Clear"))
 
     def clear_cells(self):
+        """Clears all cells of sudoku field"""
         for row in range(1, 10):
             for column in range(1, 10):
                 eval(f'self.cell{row}{column}.setText("")', {"self": self})

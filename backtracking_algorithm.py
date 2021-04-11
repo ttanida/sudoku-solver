@@ -8,22 +8,31 @@ def prepare(ui_obj):
 	1. Converts ui_obj to nested numpy matrix values_of_cells to be passed into backtracking_algo
 	2. Highlights user inputted cells in orange"""
 
+	# disable the solve and clear button
 	ui_obj.solve_button_clicked = True
 	ui_obj.solve_button.setDisabled(True)
 	ui_obj.clear_button.setDisabled(True)
 
+	# function get_values_of_cells retrieves all 81 cell values of sudoku grid as a nested numpy array
 	values_of_cells = get_values_of_cells(ui_obj)
 
 	color_user_inputted_cells(values_of_cells, ui_obj)
+
+	# backtracking_algo is a recursive algorithm that raises an exception as soon as
+	# it has found a solution (out of possibly many) for the given sudoku field.
+	# The exception then propagates up the function stacks until we are back in the prepare function
+	# (with the given sudoku field solved)
 	try:
 		backtracking_algo(values_of_cells, ui_obj)
 	except:
+		# enable the solve and clear button
 		ui_obj.solve_button_clicked = False
 		ui_obj.solve_button.setEnabled(True)
 		ui_obj.clear_button.setEnabled(True)
 
 
 def color_user_inputted_cells(values_of_cells, ui_obj):
+	"""Colors all user inputted cells as orange"""
 	for row in range(1, 10):
 		for column in range(1, 10):
 			if values_of_cells[row-1][column-1] != 0:
@@ -45,7 +54,7 @@ def backtracking_algo(values_of_cells, ui_obj):
 						eval(f'ui_obj.cell{row}{column}.setText("{number}")', {"ui_obj": ui_obj})
 						QtWidgets.qApp.processEvents()
 
-						# since we now have 1 empty cell less than before, we can call backtracking_algo
+						# since we now have 1 less empty cell than before, we can call backtracking_algo
 						# recursively to fill out the rest of the empty cells
 						backtracking_algo(values_of_cells, ui_obj)
 
@@ -61,7 +70,8 @@ def backtracking_algo(values_of_cells, ui_obj):
 				return None
 
 	# we raise an exception once we've found a solution (out of possibly many)
-	# we know we have a solution, since we went through the nested for loops, which means that no cell is empty
+	# we know we have a solution, since we went through the nested for loops without recursively calling backtracking_algo
+	# which means that no cell is empty
 	raise Exception("Solution to sudoku found! Breaking out of recursive loop!")
 
 
@@ -92,4 +102,3 @@ def possible(row_index, column_index, number, values_of_cells):
 				return False
 
 	return True
-
