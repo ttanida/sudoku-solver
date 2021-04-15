@@ -19,4 +19,8 @@ Instructions:
 5. Click **clear** to clear all numbers at any time
 6. Entering the same numbers in a row, column or block will not be accepted as input, so delete any of the two numbers that violated the sudoku constraint
 
-<img src="/images_for_readme/IMG5.png" alt="IMG5" width="600"/>
+<div style="text-align: center;">
+  <img src="/images_for_readme/IMG5.png" alt="IMG5" width="500"/>
+</div>
+
+
